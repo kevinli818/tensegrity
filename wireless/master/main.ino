@@ -14,19 +14,26 @@ int id = 0;
 
 typedef struct
 {
-  bool connected;
+  bool connected;                
+  bool has_responded; //true if controller has responded to latest EchoRequest
+  //randomly generated number used to verify the correctness of an EchoResponse
   uint32_t verification_number;
-} controller_status
+} controller;
 
 //the perceived statuses of controllers 0 through 5. Note that status[0] is more 
-//or less unused.
-controller_status statuses[6];
+//or less unused as there's no use for the master to track connectivity with itself.
+controller controllers[6];
+
+//system clock time to verify that echos have been responded to.
+uint64_t keepalive_deadline = 0;
 
 void setup() {
   Serial.begin(57600); //initialize serial connection for debugging purposes.
-  //initialize statuses array
+
+  //initialize controller array
   for (int i = 1; i <= 5; i++) {
-    statuses[i].connected = false;
-    statuses[i].verification_number = 0;
+    controllers[i].connected = false;
+    controllers[i].has_responded = false;
+    controllers[i].verification_number = 0;
   }
 }

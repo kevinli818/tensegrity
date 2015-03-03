@@ -6,10 +6,10 @@ depicted below. The message and controller IDs together are considered the "head
 with any protocol message sent having at least these two elements. Contents of the payload vary
 depending on the message type.
  
-+------------+---------------+---------------------------+
-| Message ID | Controller ID |          Payload          |
-|  (8 bits)  |    (8 bits)   |   (length undetermined)   |
-+------------+---------------+---------------------------+
++------------+---------------+-------------------------+
+| Message ID | Controller ID |         Payload         |
+|  (8 bits)  |    (8 bits)   |     (length varies)     |
++------------+---------------+-------------------------+
 
 Message ID - An 8-bit ID specifying the type of message being sent. It is improbable that all 256
              possible IDs will have to be used, so the number of bits used can be cut down to a 
@@ -58,7 +58,7 @@ Section 2: EchoRequests and EchoResponses
 EchoRequests and EchoResponses are the keep-alives sent between controller and slaves. The master 
 controller sends an EchoResponse to all slaves every 10(this amount of time was arbitrarily picked)
 seconds. The Controller ID of an EchoRequest is set to the slave controller that the master 
-controller wants to check on, and the payload contains a single (probably random) 32 bit integer.
+controller wants to check on, and the payload contains only a single (random) 32 bit integer.
 
 Within 5 (again, arbitrarily picked) seconds, the master expects a response back from each of the
 slaves that it sent an EchoRequest to, otherwise it assumes the connection has been lost and attempts
