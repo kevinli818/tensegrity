@@ -18,9 +18,10 @@ Message ID - An 8-bit ID specifying the type of message being sent. It is improb
 Controller ID - A number ranging from 1-5 signifying either which controller the message is intended 
                 for (if sent by the master controller) or the slave controller that the message is 
                 being sent from. The master controller has ID 0, and the five slave controllers have 
-                IDs from 1 to 5. Again, 8 bits are way more than what is needed to send this 
-                information, but we'll use 8 bits for convenience unless the space is needed 
-                elsewhere
+                IDs from 1 to 5. If the master controller sends a message with Controller ID equal to 0,
+                then the message sent is intended to be read by all slaves (often happens for keepalives).
+                Again, 8 bits are way more than what is needed to send this information, but we'll use 
+                8 bits for convenience unless the space is needed elsewhere. 
 
 Payload - Varies depending on the type of message being sent. Described in more detail in later 
           sections.
@@ -60,7 +61,7 @@ controller sends an EchoResponse to all slaves every 10(this amount of time was 
 seconds. The Controller ID of an EchoRequest is set to the slave controller that the master 
 controller wants to check on, and the payload contains only a single (random) 32 bit integer.
 
-Within 5 (again, arbitrarily picked) seconds, the master expects a response back from each of the
+Within 1 (again, arbitrarily picked) second, the master expects a response back from each of the
 slaves that it sent an EchoRequest to, otherwise it assumes the connection has been lost and attempts
 to reestablish it. The EchoResponse sent from slave->master is identical to the request and is 
 verified once received by the master controller.
