@@ -35,11 +35,12 @@ Section 1: Table summary of message types.
 | 0  | EchoRequest  | Keepalive timer sent from master->slave.            |
 |    |    /Response | response sent from slave->master                    |
 +-------------------------------------------------------------------------+
+| 1  | MotorCommand | Always sent from master->slave.                     |
 |    |              |                                                     |
++-------------------------------------------------------------------------+
+| 2  |EncoderReading| Always sent from slave->master.                     |
 |    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
++-------------------------------------------------------------------------+
 |    |              |                                                     |
 |    |              |                                                     |
 |    |              |                                                     |
@@ -65,3 +66,7 @@ Within 1 (again, arbitrarily picked) second, the master expects a response back 
 slaves that it sent an EchoRequest to, otherwise it assumes the connection has been lost and attempts
 to reestablish it. The EchoResponse sent from slave->master is identical to the request and is 
 verified once received by the master controller.
+
+-----------------------------------------------------------------------------------------------------
+Section 3: MotorCommands and EncoderReadings
+-----------------------------------------------------------------------------------------------------
