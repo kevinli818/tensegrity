@@ -11,17 +11,14 @@ depending on the message type.
 |  (8 bits)  |    (8 bits)   |     (length varies)     |
 +------------+---------------+-------------------------+
 
-Message ID - An 8-bit ID specifying the type of message being sent. It is improbable that all 256
-             possible IDs will have to be used, so the number of bits used can be cut down to a 
-             significantly smaller value if the space is required.
+Message ID - An 8-bit ID specifying the type of message being sent. More information about each message 
+             type is specified in the following sections.
 
 Controller ID - A number ranging from 1-5 signifying either which controller the message is intended 
                 for (if sent by the master controller) or the slave controller that the message is 
                 being sent from. The master controller has ID 0, and the five slave controllers have 
                 IDs from 1 to 5. If the master controller sends a message with Controller ID equal to 0,
                 then the message sent is intended to be read by all slaves (often happens for keepalives).
-                Again, 8 bits are way more than what is needed to send this information, but we'll use 
-                8 bits for convenience unless the space is needed elsewhere. 
 
 Payload - Varies depending on the type of message being sent. Described in more detail in later 
           sections.
@@ -33,40 +30,73 @@ Section 1: Table summary of message types.
 | ID | Message Type |                     Description                     |
 +-------------------------------------------------------------------------+
 | 0  | EchoRequest  | Keepalive timer sent from master->slave.            |
-|    |    /Response | response sent from slave->master                    |
+|    |    /Response | Response sent from slave->master                    |
 +-------------------------------------------------------------------------+
 | 1  | MotorCommand | Always sent from master->slave.                     |
-|    |              |                                                     |
+|    |              | Gives a command to each of the four motors          |
+|    |              | controlled by the controller the message is sent to.|
 +-------------------------------------------------------------------------+
 | 2  |EncoderReading| Always sent from slave->master.                     |
-|    |              |                                                     |
+|    |              | Updates the master controller of the positions      |
+|    |              | of the four motors of a certain controller.         |
 +-------------------------------------------------------------------------+
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-|    |              |                                                     |
-+----+--------------+-----------------------------------------------------+
+
+Note: more message types will be added as needed.
 
 -----------------------------------------------------------------------------------------------------
 Section 2: EchoRequests and EchoResponses
 -----------------------------------------------------------------------------------------------------
 EchoRequests and EchoResponses are the keep-alives sent between controller and slaves. The master 
-controller sends an EchoResponse to all slaves every 10(this amount of time was arbitrarily picked)
-seconds. The Controller ID of an EchoRequest is set to the slave controller that the master 
-controller wants to check on, and the payload contains only a single (random) 32 bit integer.
+controller sends an EchoRequest to all slaves simultaneously every 10 seconds. The Controller ID is 
+set to 0 as each slave is expected to respond to the EchoRequest, and the payload contains a single
+32-bit integer.
 
-Within 1 (again, arbitrarily picked) second, the master expects a response back from each of the
-slaves that it sent an EchoRequest to, otherwise it assumes the connection has been lost and attempts
-to reestablish it. The EchoResponse sent from slave->master is identical to the request and is 
-verified once received by the master controller.
+Within 500ms, the master expects a response back from each of the slaves that it sent an EchoRequest 
+to, otherwise it assumes the connection has been lost. The EchoResponse sent from slave->master is 
+nearly identical to the request originally received from the master. The only difference is that the
+Controller ID of the response is changed from 0 to the Controller ID of the slave that the response 
+is coming from.
+
+Upon receiving an EchoResponse, the master controller checks to see that the 32-bit integer in the 
+payload of the response is identical to that sent in the request to verify the reliability of the
+communication.
 
 -----------------------------------------------------------------------------------------------------
 Section 3: MotorCommands and EncoderReadings
 -----------------------------------------------------------------------------------------------------
+MotorCommands and EncoderReadings are messages with virtually identical formatting. They are so 
+closely tied to each other that they may as well be described together, but they do have different
+IDs to make code on the user side more readable.
+
+The purpose of the MotorCommand message is self explanatory. The master controller sends a 
+MotorCommand to a slave to signal the slave to change the position of one or more of the motors
+that it controls. EncoderReadings are sent back from slave to master to periodically update the 
+master controller on the current position of its motors. The frequency of EncoderReading updates
+is currently set at 2Hz. The controller can thus expect to have to process EncoderReading updates
+incoming at a rate of roughly 10 updates/second.
+
++-------------+-------------+-------------+-------------+
+| M1 Position | M2 Position | M3 Position | M4 Position |
+|  (32 bits)  |  (32 bits)  |  (32 bits)  |  (32 bits)  |
++-------------+-------------+-------------+-------------+
+
+As each controller manages exactly four motors, a Motor ID is not sent along with each motor 
+position. Instead, the motor that each position corresponds to is specified implicitly by the
+index of the number in the array. Because the position of each motor can be specified with 
+an integer ranging from 0-3600, we reserve numbers above 3600 as special commands listed below.
+
+MotorCommand Reserved Numbers:
++---------+-------------+
+| Command |   Meaning   |
+| Number  |             |
++-----------------------+
+|  0xFFF  |Stay in place|
++---------+-------------+
+
+Note: more commands will be added as needed.
+
+The structure of the payload of an EncoderReading is identical to that of a MotorCommand, so a
+diagram is not included. Exactly when EncoderReadings begin being sent to the master controller
+has not quite been worked out yet, but one possible scheme would be to have the first MotorCommand
+sent from the master controller to a certain slave act as sort of the "subscription message" to 
+begin receiving updates from that particular slave.

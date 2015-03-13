@@ -8,7 +8,6 @@
 #define ID 1
 
 //helper functions used in loop()
-void send_echo_response(void);
 
 void setup() {
   Serial.begin(57600);

@@ -15,7 +15,7 @@
  * pointer as these bits are common to all protocol messages.
  */
 #define ECHO_LENGTH 4     //echos are only made up of a single 32 bit int.
-#define MOTOR_COMMAND 16
+#define MOTOR_COMMAND_LENGTH 16
 #define ENCODER_READING_LENGTH 16
 #define BASE_MSG_LENGTH 4 //2 bytes total in the header 
                           //+2 bytes for the payload pointer

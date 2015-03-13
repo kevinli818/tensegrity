@@ -7,7 +7,7 @@
 
 #define CE_PIN 9
 #define CSN_PIN 10
-extern RF24 radio(CE_PIN, CSN_PIN);
+RF24 radio(CE_PIN, CSN_PIN);
 
 uint64_t addresses[6] = {0xF0F0F0F000, 0xF0F0F0F011, 0xF0F0F0F022,
                          0xF0F0F0F033, 0xF0F0F0F044, 0xF0F0F0F055};
@@ -38,10 +38,10 @@ void radio_init(uint8_t my_id) {
     //open broadcast pipe and individual reading pipes
     radio.openWritingPipe(addresses[0]);
     radio.openReadingPipe(1, addresses[1]);
-    radio.openReadingPipe(2, addresses[1]);
-    radio.openReadingPipe(3, addresses[1]);
-    radio.openReadingPipe(4, addresses[1]);
-    radio.openReadingPipe(5, addresses[1]);
+    radio.openReadingPipe(2, addresses[2]);
+    radio.openReadingPipe(3, addresses[3]);
+    radio.openReadingPipe(4, addresses[4]);
+    radio.openReadingPipe(5, addresses[5]);
   }
   else {
     radio.openReadingPipe(1, addresses[0]);
@@ -101,6 +101,9 @@ Encoder_reading * unmarshall_encoder_reading(void *payload) {
 
 ////////////////////////// Master Helper Functions //////////////////////////
 void send_echoes() {
+  for (int i = 1; i <= 5; i++) {
+    controllers[i].has_responded = false;
+  }
   Serial.println("Sending echo requests.");
   Echo *e = (Echo *) malloc(ECHO_LENGTH);
   verification_number = (uint32_t) millis();
