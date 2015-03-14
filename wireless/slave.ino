@@ -2,7 +2,6 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <tensegrity_wireless.h>
-#include "assert.h"
 
 //ID is 0 for the master controller, 1 through 5 for slaves.
 #define ID 1
@@ -15,16 +14,16 @@ void setup() {
 }
 
 void loop() {
-  uint8_t m_id;
-  uint8_t c_id;
   if (radio_has_data()) {
-    m_id = radio_read_byte();
-    while(!radio_has_data()) {;}   //spin until next part of message comes in
-    c_id = radio_read_byte();
-    assert(c_id == 0); //echo came from master controller
-    switch(m_id) {
+    Message *m = receive_message();
+    switch(m->message_id) {
       case ECHO:
-        send_echo_response();
+        if (m->controller_id != 0) {
+          Serial.println("Error. EchoRequests should only be coming in from master.");
+        }
+        send_echo(ID, m->payload.verification_number);
+        break;
+      case MOTOR_COMMAND: //TODO(vdonato): actuate motors based on MOTOR_COMMAND
         break;
     }
   }

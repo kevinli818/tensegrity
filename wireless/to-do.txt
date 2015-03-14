@@ -1,7 +1,0 @@
-refactor radio protocol to use a generic message struct and message ids/unions to differentiate
-between different types of messages.
-switch to using static TX and RX buffers over malloc-ing and free-ing memory constantly.
-fix concurrency problems when more than 1 slave is connected.
-  messages cannot be sent piece by piece. entire message must be sent at once.
-    mind the 256 byte limit on messages that the nordic board can send.
-  making the above change will most likely allow us to remove the use of spin locks.

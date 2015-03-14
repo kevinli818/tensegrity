@@ -51,7 +51,7 @@ controller sends an EchoRequest to all slaves simultaneously every 10 seconds. T
 set to 0 as each slave is expected to respond to the EchoRequest, and the payload contains a single
 32-bit integer.
 
-Within 500ms, the master expects a response back from each of the slaves that it sent an EchoRequest 
+Within 1000ms, the master expects a response back from each of the slaves that it sent an EchoRequest
 to, otherwise it assumes the connection has been lost. The EchoResponse sent from slave->master is 
 nearly identical to the request originally received from the master. The only difference is that the
 Controller ID of the response is changed from 0 to the Controller ID of the slave that the response 
@@ -79,7 +79,8 @@ incoming at a rate of roughly 10 updates/second.
 | M1 Position | M2 Position | M3 Position | M4 Position |
 |  (32 bits)  |  (32 bits)  |  (32 bits)  |  (32 bits)  |
 +-------------+-------------+-------------+-------------+
-
+| Output 4    | Output 5    | Output 10   | Output 11   |
++-------------+-------------+-------------+-------------+
 As each controller manages exactly four motors, a Motor ID is not sent along with each motor 
 position. Instead, the motor that each position corresponds to is specified implicitly by the
 index of the number in the array. Because the position of each motor can be specified with 
@@ -100,3 +101,4 @@ diagram is not included. Exactly when EncoderReadings begin being sent to the ma
 has not quite been worked out yet, but one possible scheme would be to have the first MotorCommand
 sent from the master controller to a certain slave act as sort of the "subscription message" to 
 begin receiving updates from that particular slave.
+
