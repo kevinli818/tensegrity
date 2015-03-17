@@ -14,12 +14,12 @@
  * include the four bytes reserved for the message_id, controller_id, and payload
  * pointer as these bits are common to all protocol messages.
  */
-#define MESSAGE_LENGTH 32
+#define MAX_MESSAGE_LENGTH 32
 #define ECHO_LENGTH 4     //echos are only made up of a single 32 bit int.
 #define MOTOR_COMMAND_LENGTH 16
 #define ENCODER_READING_LENGTH 16
-#define BASE_MSG_LENGTH 4 //2 bytes total in the header 
-                          //+2 bytes for the payload pointer
+#define BASE_MSG_LENGTH 2 //2 bytes total in the header 
+
 /*
  * Structs for messages passed over the radio and messages in their user level
  * representations. After a message is sent or received and processed, the 

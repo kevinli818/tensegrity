@@ -66,7 +66,7 @@ void loop() {
 void check_connections() {
   bool all_connected = true;
   for (int i = 1; i <= 5; i++) {
-    if(!controllers[i].has_responded) {
+    if (!controllers[i].has_responded) {
       Serial.print("Controller ");
       Serial.print(i);
       Serial.println(" not connected.");
@@ -74,6 +74,6 @@ void check_connections() {
     }
   }
   if (all_connected) {
-    Serial.println("All controllers connected");
+    Serial.println("All controllers connected!");
   }
 }

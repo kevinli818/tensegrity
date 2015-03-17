@@ -1,0 +1,4 @@
+Possible reliability issues: 
+  - Occasionally (from the master's point of view) an echoresponse is only heard from one of the 
+    slaves. However, slaves always seem to hear the master's echorequest/reply, which seems 
+    strange as the master does not see the return packet on its end.

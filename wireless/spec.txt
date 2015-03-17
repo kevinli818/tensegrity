@@ -79,7 +79,7 @@ incoming at a rate of roughly 10 updates/second.
 | M1 Position | M2 Position | M3 Position | M4 Position |
 |  (32 bits)  |  (32 bits)  |  (32 bits)  |  (32 bits)  |
 +-------------+-------------+-------------+-------------+
-| Output 4    | Output 5    | Output 10   | Output 11   |
+| Output 4    | Output 5    | Output 10   | Output 11   |  <-- output pin  # of corresponding motor
 +-------------+-------------+-------------+-------------+
 As each controller manages exactly four motors, a Motor ID is not sent along with each motor 
 position. Instead, the motor that each position corresponds to is specified implicitly by the

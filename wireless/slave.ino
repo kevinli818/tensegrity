@@ -25,6 +25,9 @@ void loop() {
         break;
       case MOTOR_COMMAND: //TODO(vdonato): actuate motors based on MOTOR_COMMAND
         break;
+      case ENCODER_READING:
+        Serial.println("Error: EncoderReadings should only be sent from slave->master.");
+        break;
     }
   }
 }
