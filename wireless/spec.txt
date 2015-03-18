@@ -1,15 +1,15 @@
 -----------------------------------------------------------------------------------------------------
-Section 0: Message Headers
+Section 0: Message Structure
 -----------------------------------------------------------------------------------------------------
-All messages have the relatively simple structure of Message ID, Controller ID, and Payload as 
-depicted below. The message and controller IDs together are considered the "header" of the message,
+All messages have the relatively simple structure of Message ID, Controller ID, Payload, and checksum 
+as depicted below. The message and controller IDs together are considered the "header" of the message,
 with any protocol message sent having at least these two elements. Contents of the payload vary
 depending on the message type.
  
-+------------+---------------+-------------------------+
-| Message ID | Controller ID |         Payload         |
-|  (8 bits)  |    (8 bits)   |     (length varies)     |
-+------------+---------------+-------------------------+
++------------+---------------+-------------------------+------------+
+| Message ID | Controller ID |         Payload         |  Checksum  |
+|  (8 bits)  |    (8 bits)   |     (length varies)     |  (8 bits)  |
++------------+---------------+-------------------------+------------+
 
 Message ID - An 8-bit ID specifying the type of message being sent. More information about each message 
              type is specified in the following sections.
@@ -22,6 +22,12 @@ Controller ID - A number ranging from 1-5 signifying either which controller the
 
 Payload - Varies depending on the type of message being sent. Described in more detail in later 
           sections.
+
+Checksum - An 8-bit checksum sent at the end of every message. For simplicity, the checksum is always
+           sent as the 32nd byte of any message. This checksum is calculated by simply XORing the first 
+           31 bytes of the message together and using the result of that calculation. Note that if a
+           checksum turns out to be invalid upon receiving a message, the receive_message function 
+           replaces the message_id field of that message with an error code.
 
 -----------------------------------------------------------------------------------------------------
 Section 1: Table summary of message types.          
