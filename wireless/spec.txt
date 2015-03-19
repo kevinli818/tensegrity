@@ -46,6 +46,12 @@ Section 1: Table summary of message types.
 |    |              | Updates the master controller of the positions      |
 |    |              | of the four motors of a certain controller.         |
 +-------------------------------------------------------------------------+
+| 3  | EndcapSensor | Always sent from slave->master.                     |
+|    |    Reading   | A boolean sensor reading that is true if the        |
+|    |              | corresponding endcap sensor is activated. Note that |
+|    |              | unlike other messages that are sent on a schedule,  |
+|    |              | EncoderSensorReadings can be sent as an interrupt.  |
++-------------------------------------------------------------------------+
 
 Note: more message types will be added as needed.
 
@@ -108,3 +114,19 @@ has not quite been worked out yet, but one possible scheme would be to have the 
 sent from the master controller to a certain slave act as sort of the "subscription message" to 
 begin receiving updates from that particular slave.
 
+-----------------------------------------------------------------------------------------------------
+Section 4: EndcapSensorReadings
+-----------------------------------------------------------------------------------------------------
+EndcapSensorReadings are simply boolean values that are true if the corresponding endcap sensors are
+activated and false otherwise. Like MotorCommands and EncoderReadings, the endcap that the message
+corresponds to is specified implicitly by the controller sending the message as well as the position
+in the array of sensor values (which happens to be an array of length 2 in this case as each controller
+is in charge of only two endcap sensors). The structure of the payload of an EndcapSensorReading is 
+given below.
+
++------------+------------+
+| E1 Reading | E2 Reading |
+|  (8 bits)  |  (8 bits)  |
++------------+------------+
+Note that since EndcapSensorReadings are boolean sensor readings, the most significant 7 bits of each 
+reading are not used and thus will be ignored.

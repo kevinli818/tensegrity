@@ -37,6 +37,10 @@ typedef struct
       uint32_t e3;
       uint32_t e4;
     } encoder_reading;
+    struct endcap_sensor_reading {
+      uint8_t e1; //1 if on. off otherwise.
+      uint8_t e2;
+    } endcap_sensor_reading;
   } payload;
 } Message;
 
@@ -52,6 +56,7 @@ bool radio_has_data(void);
 void send_echo(uint8_t, uint32_t);
 void send_motor_command(uint8_t, uint32_t, uint32_t, uint32_t, uint32_t);
 void send_encoder_reading(uint32_t, uint32_t, uint32_t, uint32_t);
+void send_endcap_sensor_reading(bool, bool);
 
 ///////////////////////////// Message receiving /////////////////////////////
 Message * receive_message(void);

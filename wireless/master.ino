@@ -59,6 +59,18 @@ void loop() {
           controllers[m->controller_id].has_responded = true;
         }
         break;
+      case MOTOR_COMMAND:
+        Serial.println("ERROR: MotorCommands should only be sent from master->slave.");
+        break;
+      case ENCODER_READING:
+        Serial.println("Received encoder readings");
+        break;
+      case ENDCAP_SENSOR_READING:
+        Serial.println("Received endcap sensor readings");
+        break;
+      case ERROR: //TODO(vdonato): add more nontrivial error handling
+        Serial.println("Something went wrong.");
+        break;
     }
   }
 }

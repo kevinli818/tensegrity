@@ -24,9 +24,16 @@ void loop() {
         send_echo(ID, m->payload.verification_number);
         break;
       case MOTOR_COMMAND: //TODO(vdonato): actuate motors based on MOTOR_COMMAND
+        Serial.println("Received motor command.");
         break;
       case ENCODER_READING:
         Serial.println("Error: EncoderReadings should only be sent from slave->master.");
+        break;
+      case ENDCAP_SENSOR_READING:
+        Serial.println("Error: EndcapSensorReadings should only be sent from slave->master.");
+        break;
+      case ERROR: //TODO(vdonato): add more nontrivial error handling
+        Serial.println("Something went wrong.");
         break;
     }
   }

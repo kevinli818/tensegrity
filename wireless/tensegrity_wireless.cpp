@@ -9,7 +9,7 @@
 #define CSN_PIN 10
 RF24 radio(CE_PIN, CSN_PIN);
 
-void send_message(uint8_t);
+void send_message(void);
 uint8_t calculate_checksum(Message *);
 uint8_t get_checksum(Message *);
 
@@ -55,7 +55,7 @@ void send_echo(uint8_t c_id, uint32_t verification_number) {
   m->message_id = ECHO; m->controller_id = c_id;
   m->payload.verification_number = verification_number;
   Serial.println("Now sending echo.");
-  send_message(ECHO);
+  send_message();
 }
 
 /* Sends motor command to the specified slave controller. The 
@@ -72,7 +72,7 @@ void send_motor_command(uint8_t c_id, uint32_t m1, uint32_t m2,
   m->payload.motor_command.m3 = m3;
   m->payload.motor_command.m4 = m4;
   Serial.println("Now sending motor command.");
-  send_message(MOTOR_COMMAND);
+  send_message();
 }
 
 /* Sends encoder_reading from the current controller to the master.
@@ -89,7 +89,17 @@ void send_encoder_reading(uint32_t e1, uint32_t e2,
   m->payload.encoder_reading.e3 = e3;
   m->payload.encoder_reading.e4 = e4;
   Serial.println("Now sending encoder reading.");
-  send_message(ENCODER_READING);
+  send_message();
+}
+
+void send_endcap_sensor_reading(bool e1, bool e2) {
+  Message *m = (Message *) tx_buffer;
+  m->message_id = ENDCAP_SENSOR_READING;
+  m->controller_id = id;
+  m->payload.endcap_sensor_reading.e1 = (uint8_t) (e1 == true);
+  m->payload.endcap_sensor_reading.e2 = (uint8_t) (e2 == true);
+  Serial.println("Now sending endcap sensor reading.");
+  send_message();
 }
 
 ///////////////////////////// Message receiving /////////////////////////////
@@ -108,26 +118,11 @@ Message * receive_message() {
  * type m_id. Note that this function should not be called outside of this 
  * file.
  */
-void send_message(uint8_t m_id) {
+void send_message() {
   tx_buffer[31] = calculate_checksum((Message *) tx_buffer);
-  Serial.println(tx_buffer[31]);
-  switch(m_id) {
-    case ECHO:
-      radio.stopListening();
-      radio.write(tx_buffer, MESSAGE_LENGTH);
-      radio.startListening();
-      break;
-    case MOTOR_COMMAND:
-      radio.stopListening();
-      radio.write(tx_buffer, MESSAGE_LENGTH);
-      radio.startListening();
-      break;
-    case ENCODER_READING:
-      radio.stopListening();
-      radio.write(tx_buffer, MESSAGE_LENGTH);
-      radio.startListening();
-      break;
-  }
+  radio.stopListening();
+  radio.write(tx_buffer, MESSAGE_LENGTH);
+  radio.startListening();
 }
 
 /* Calculates the checksum of the given message. The checksum is calculated
