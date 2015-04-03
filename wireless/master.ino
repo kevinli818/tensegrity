@@ -23,6 +23,9 @@ uint64_t echo_deadline = 0xFFFFFFFF;
 bool echo_verified = true;
 uint32_t verification_number = 0;
 
+int motor_vals[4];
+int k = 0;
+
 void setup() {
   Serial.begin(57600); //initialize serial connection for debugging purposes.
   for (int i = 1; i <= 5; i++) {
@@ -71,6 +74,15 @@ void loop() {
       case ERROR: //TODO(vdonato): add more nontrivial error handling
         Serial.println("Something went wrong.");
         break;
+    }
+  }
+  if (Serial.available()) {
+    motor_vals[k] = (int) Serial.parseInt();
+    Serial.println(motor_vals[k]);
+    k++;
+    if (k == 4) {
+      send_motor_command(1, motor_vals[0], motor_vals[1], motor_vals[2], motor_vals[3]);
+      k = 0;
     }
   }
 }

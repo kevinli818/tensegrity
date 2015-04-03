@@ -5,6 +5,7 @@
 #include "assert.h"
 #include "tensegrity_wireless.h"
 
+//TODO(vdonato): change these pins to the pins actually used
 #define CE_PIN 9
 #define CSN_PIN 10
 RF24 radio(CE_PIN, CSN_PIN);
@@ -30,6 +31,8 @@ uint8_t rx_buffer[MESSAGE_LENGTH] = {0};
 void radio_init(uint8_t my_id) {
   id = my_id;
   radio.begin();
+  radio.setRetries(8, 15);
+  radio.setPALevel(RF24_PA_HIGH);
   if (id == 0) { //radio belongs to the master controller
     //open broadcast pipe and individual reading pipes
     radio.openWritingPipe(addresses[0]);
@@ -41,7 +44,7 @@ void radio_init(uint8_t my_id) {
   }
   else {
     radio.openReadingPipe(1, addresses[0]);
-    radio.openWritingPipe(addresses[id]);
+    radio.openWritingPipe(addresses[my_id]);
   }
   radio.startListening();
 }
