@@ -12,11 +12,11 @@
 Encoder motor4(16, 17);
 int sp4 = 20, spb4 = 21;
 Encoder motor3(14, 15);
-int sp3 = 23; spb3 = 22;
+int sp3 = 23, spb3 = 22;
 Encoder motor2(7, 8);
-int sp2 = 5; spb2 = 6;
+int sp2 = 5, spb2 = 6;
 Encoder motor1(1, 2);
-int sp1 = 3; spb1 = 4;
+int sp1 = 3, spb1 = 4;
 
 float K_1 = .5,K_2 = .5, K_3 = .5, K_4 = .5; 
 int   Kp_1 = 2, Kp_2 = 2, Kp_3 = 2, Kp_4 = 2;    
@@ -30,7 +30,7 @@ int pTerm_2 = 0, iTerm_2 = 0, dTerm_2 = 0;
 int pTerm_3 = 0, iTerm_3 = 0, dTerm_3 = 0;
 int pTerm_4 = 0, iTerm_4 = 0, dTerm_4 = 0;
 
-int target_1 = 0, target_2 = 0, target_3 = 0, target_4 = 0;
+int target_1 = 3600, target_2 = 3600, target_3 = 3600, target_4 = 3600;
 int error_1 = 0, error_2 = 0, error_3 = 0, error_4 = 0;
 float updatePid1 = 0,  updatePid2 = 0,  updatePid3 = 0,  updatePid4 = 0;
 
@@ -42,6 +42,7 @@ volatile int encoder3Pos = 0;
 volatile int encoder4Pos = 0;
 
 uint64_t next_encoder_reading = 0;
+uint64_t clock = 0;
 
 void setup() {
   pinMode(sp1, OUTPUT);
@@ -64,14 +65,17 @@ void loop() {
   encoder3Pos = motor3.read();
   encoder4Pos = motor4.read();
 
+  /*
   uint64_t clock = millis();
   if (clock >= next_encoder_reading) {
-    send_encoder_reading(encoder1Pos, encoder2Pos, enoder3Pos, encoder4Pos);
+    send_encoder_reading(encoder1Pos, encoder2Pos, encoder3Pos, encoder4Pos);
     next_encoder_reading = clock + ENCODER_READING_FREQUENCY;
   }
+  */
 
   if (radio_has_data()) {
     Message *m = receive_message();
+    Serial.println("Message received.");
     switch(m->message_id) {
       case ECHO:
         if (m->controller_id != 0) {
@@ -158,12 +162,25 @@ void loop() {
     analogWrite(spb1, updatePid1); 
   } 
   
-  Serial.print("Encoder 1: \t");
-  Serial.println (encoder1Pos, DEC);
-  Serial.print("Encoder 2: \t");
-  Serial.println (encoder2Pos, DEC);
-  Serial.print("Encoder 3: \t");
-  Serial.println (encoder3Pos, DEC);
-  Serial.print("Encoder 4: \t");
-  Serial.println (encoder4Pos, DEC);
+  if (clock == 10000) {
+    Serial.print("Encoder 1: \t");
+    Serial.println (encoder1Pos, DEC);
+    Serial.print("Encoder 2: \t");
+    Serial.println (encoder2Pos, DEC);
+    Serial.print("Encoder 3: \t");
+    Serial.println (encoder3Pos, DEC);
+    Serial.print("Encoder 4: \t");
+    Serial.println (encoder4Pos, DEC);
+
+    Serial.print("Target 1: \t");
+    Serial.println (target_1, DEC);
+    Serial.print("Target 2: \t");
+    Serial.println (target_2, DEC);
+    Serial.print("Target 3: \t");
+    Serial.println (target_3, DEC);
+    Serial.print("Target 4: \t");
+    Serial.println (target_4, DEC);
+    clock = 0;
+  }
+  clock++;
 }
