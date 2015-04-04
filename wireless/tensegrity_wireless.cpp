@@ -31,7 +31,7 @@ uint8_t rx_buffer[MESSAGE_LENGTH] = {0};
 void radio_init(uint8_t my_id) {
   id = my_id;
   radio.begin();
-  radio.setRetries(8, 15);
+  radio.setRetries(15, 15);
   radio.setPALevel(RF24_PA_HIGH);
   if (id == 0) { //radio belongs to the master controller
     //open broadcast pipe and individual reading pipes

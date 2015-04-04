@@ -16,41 +16,38 @@ typedef struct
 controller controllers[6];
 void check_connections(void);
 
-//system clock time to send next keepalive message.
-uint64_t next_echo = 0;
+elapsedMillis next_echo;
+elapsedMillis echo_deadline;
 //system clock time to verify that echos have been responded to.
-uint64_t echo_deadline = 0xFFFFFFFF;
 bool echo_verified = true;
 uint32_t verification_number = 0;
 
-int motor_vals[4];
+int motor_vals[5];
 int k = 0;
 
 void setup() {
-  Serial.begin(57600); //initialize serial connection for debugging purposes.
+  Serial.begin(57600);
   for (int i = 1; i <= 5; i++) {
     controllers[i].has_responded = false;
   }
   radio_init(ID);
-  next_echo = millis() + 500;
 }
 
 void loop() {
   //send echoes and set response deadline.
-  uint64_t system_clock = millis(); 
-  if (system_clock >= next_echo) {
+  if (next_echo >= ECHO_FREQUENCY) {
     for (int i = 1; i <= 5; i++) {
       controllers[i].has_responded = false;
     }
     //send EchoRequest with c_id 0 (to all slaves)
     send_echo(ID, ++verification_number);
-    echo_deadline = system_clock + ECHO_DEADLINE;
+    next_echo = 0;
+    echo_deadline = 0;
     echo_verified = false;
-    next_echo = system_clock + ECHO_FREQUENCY;
   }
   //checks to see if every controller has responded
   //to echo by the keepalive deadline.
-  if (system_clock >= echo_deadline && !echo_verified) {
+  if (echo_deadline >= ECHO_DEADLINE && !echo_verified) {
     check_connections();
     echo_verified = true;
   }
@@ -77,11 +74,11 @@ void loop() {
     }
   }
   if (Serial.available()) {
-    motor_vals[k] = (int) Serial.parseInt();
+    motor_vals[k] = (uint32_t) Serial.parseInt();
     Serial.println(motor_vals[k]);
     k++;
-    if (k == 4) {
-      send_motor_command(1, motor_vals[0], motor_vals[1], motor_vals[2], motor_vals[3]);
+    if (k == 5) {
+      send_motor_command(motor_vals[0], motor_vals[1], motor_vals[2], motor_vals[3], motor_vals[4]);
       k = 0;
     }
   }

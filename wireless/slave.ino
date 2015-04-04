@@ -30,7 +30,7 @@ int pTerm_2 = 0, iTerm_2 = 0, dTerm_2 = 0;
 int pTerm_3 = 0, iTerm_3 = 0, dTerm_3 = 0;
 int pTerm_4 = 0, iTerm_4 = 0, dTerm_4 = 0;
 
-int target_1 = 3600, target_2 = 3600, target_3 = 3600, target_4 = 3600;
+int target_1, target_2, target_3, target_4;
 int error_1 = 0, error_2 = 0, error_3 = 0, error_4 = 0;
 float updatePid1 = 0,  updatePid2 = 0,  updatePid3 = 0,  updatePid4 = 0;
 
@@ -41,8 +41,8 @@ volatile int encoder2Pos = 0;
 volatile int encoder3Pos = 0;
 volatile int encoder4Pos = 0;
 
-uint64_t next_encoder_reading = 0;
-uint64_t clock = 0;
+elapsedMillis next_encoder_reading;
+elapsedMillis print_debug_data;
 
 void setup() {
   pinMode(sp1, OUTPUT);
@@ -56,7 +56,6 @@ void setup() {
   
   Serial.begin(57600);
   radio_init(ID);
-  next_encoder_reading = millis() + 1000;
 }
 
 void loop() {
@@ -65,13 +64,10 @@ void loop() {
   encoder3Pos = motor3.read();
   encoder4Pos = motor4.read();
 
-  /*
-  uint64_t clock = millis();
-  if (clock >= next_encoder_reading) {
+  if (next_encoder_reading >= ENCODER_READING_FREQUENCY) {
     send_encoder_reading(encoder1Pos, encoder2Pos, encoder3Pos, encoder4Pos);
-    next_encoder_reading = clock + ENCODER_READING_FREQUENCY;
+    next_encoder_reading = 0;
   }
-  */
 
   if (radio_has_data()) {
     Message *m = receive_message();
@@ -162,7 +158,7 @@ void loop() {
     analogWrite(spb1, updatePid1); 
   } 
   
-  if (clock == 10000) {
+  if (print_debug_data >= 1000) {
     Serial.print("Encoder 1: \t");
     Serial.println (encoder1Pos, DEC);
     Serial.print("Encoder 2: \t");
@@ -180,7 +176,6 @@ void loop() {
     Serial.println (target_3, DEC);
     Serial.print("Target 4: \t");
     Serial.println (target_4, DEC);
-    clock = 0;
+    print_debug_data = 0;
   }
-  clock++;
 }
