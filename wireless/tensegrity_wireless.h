@@ -2,6 +2,7 @@
 #define TENSEGRITY_WIRELESS_H
 #include "Arduino.h"
 
+
 /*
  * The message_ids of each message that can be sent 
  */
@@ -10,6 +11,11 @@
 #define ENCODER_READING 2
 #define ENDCAP_SENSOR_READING 3
 #define ERROR 7
+
+/*
+ * Special MotorCommand messages.
+ */
+#define MOTOR_STAY 0xFFF
 
 #define MESSAGE_LENGTH 32
 

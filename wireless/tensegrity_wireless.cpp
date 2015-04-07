@@ -5,7 +5,6 @@
 #include "assert.h"
 #include "tensegrity_wireless.h"
 
-//TODO(vdonato): change these pins to the pins actually used
 #define CE_PIN 9
 #define CSN_PIN 10
 RF24 radio(CE_PIN, CSN_PIN);

@@ -5,7 +5,7 @@
 #include <Encoder.h>
 
 //ID is 0 for the master controller, 1 through 5 for slaves.
-#define ID 1
+#define ID 3
 #define ENCODER_READING_FREQUENCY 500
 
 /* Motor init */
@@ -80,11 +80,13 @@ void loop() {
         send_echo(ID, m->payload.verification_number);
         break;
       case MOTOR_COMMAND:
-        Serial.println("Received motor command.");
-        target_1 = m->payload.motor_command.m1;
-        target_2 = m->payload.motor_command.m2;
-        target_3 = m->payload.motor_command.m3;
-        target_4 = m->payload.motor_command.m4;
+        if (m->controller_id == ID) {
+          Serial.println("Received motor command.");
+          target_1 = (m->payload.motor_command.m1 != MOTOR_STAY) ? m->payload.motor_command.m1 : target_1;
+          target_2 = (m->payload.motor_command.m2 != MOTOR_STAY) ? m->payload.motor_command.m2 : target_2;
+          target_3 = (m->payload.motor_command.m3 != MOTOR_STAY) ? m->payload.motor_command.m3 : target_3;
+          target_4 = (m->payload.motor_command.m4 != MOTOR_STAY) ? m->payload.motor_command.m4 : target_4;
+        }
         break;
       case ENCODER_READING:
         Serial.println("Error: EncoderReadings should only be sent from slave->master.");
