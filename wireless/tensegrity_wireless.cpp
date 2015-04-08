@@ -64,8 +64,8 @@ void send_echo(uint8_t c_id, uint32_t verification_number) {
  * motor_command sent has values m1, m2, m3, m4. See the spec for 
  * more details.
  */
-void send_motor_command(uint8_t c_id, uint32_t m1, uint32_t m2,
-                        uint32_t m3, uint32_t m4) {
+void send_motor_command(uint8_t c_id, int32_t m1, int32_t m2,
+                        int32_t m3, int32_t m4) {
   Message *m = (Message *) tx_buffer;
   m->message_id = MOTOR_COMMAND;
   m->controller_id = c_id;
@@ -81,8 +81,8 @@ void send_motor_command(uint8_t c_id, uint32_t m1, uint32_t m2,
  * The encoder_reading sent has readings e1, e2, e3, e4. See the spec
  * for more details.
  */
-void send_encoder_reading(uint32_t e1, uint32_t e2, 
-                          uint32_t e3, uint32_t e4) {
+void send_encoder_reading(int32_t e1, int32_t e2, 
+                          int32_t e3, int32_t e4) {
   Message *m = (Message *) tx_buffer;
   m->message_id = ENCODER_READING;
   m->controller_id = id;

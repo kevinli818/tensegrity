@@ -32,16 +32,16 @@ typedef struct
   union payload {
     uint32_t verification_number;
     struct motor_command {
-      uint32_t m1;
-      uint32_t m2;
-      uint32_t m3;
-      uint32_t m4;
+      int32_t m1;
+      int32_t m2;
+      int32_t m3;
+      int32_t m4;
     } motor_command;
     struct encoder_reading {
-      uint32_t e1;
-      uint32_t e2;
-      uint32_t e3;
-      uint32_t e4;
+      int32_t e1;
+      int32_t e2;
+      int32_t e3;
+      int32_t e4;
     } encoder_reading;
     struct endcap_sensor_reading {
       uint8_t e1; //1 if on. off otherwise.
@@ -60,8 +60,8 @@ bool radio_has_data(void);
 
 ////////////////////////////// Message sending //////////////////////////////
 void send_echo(uint8_t, uint32_t);
-void send_motor_command(uint8_t, uint32_t, uint32_t, uint32_t, uint32_t);
-void send_encoder_reading(uint32_t, uint32_t, uint32_t, uint32_t);
+void send_motor_command(uint8_t, int32_t, int32_t, int32_t, int32_t);
+void send_encoder_reading(int32_t, int32_t, int32_t, int32_t);
 void send_endcap_sensor_reading(bool, bool);
 
 ///////////////////////////// Message receiving /////////////////////////////

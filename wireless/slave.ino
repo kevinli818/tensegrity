@@ -5,7 +5,7 @@
 #include <Encoder.h>
 
 //ID is 0 for the master controller, 1 through 5 for slaves.
-#define ID 3
+#define ID 4
 #define ENCODER_READING_FREQUENCY 500
 
 /* Motor init */
@@ -77,6 +77,7 @@ void loop() {
         if (m->controller_id != 0) {
           Serial.println("Error. EchoRequests should only be coming in from master.");
         }
+        delay(5*ID);
         send_echo(ID, m->payload.verification_number);
         break;
       case MOTOR_COMMAND:
