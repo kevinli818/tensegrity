@@ -9,7 +9,7 @@
 
 /* defs added for autonomous circle path */
 #define SLAVE_ID 3 //should probably change this number soon
-#define COUNTS_PER_STEP 16200 //3600 counts per turn * 4.5 turns
+#define COUNTS_PER_STEP 15000 //3600 counts per turn * 4.5 turns
 #define MAX_ERROR 200
 /* end of defs added for autonomous circle*/
 
@@ -115,7 +115,7 @@ void loop() {
     }
 
     //manual motor command input commented out for now.
-    /*
+    /*    
     motor_vals[k] = (uint32_t) Serial.parseInt();
     Serial.println(motor_vals[k]);
     k++;
@@ -123,7 +123,7 @@ void loop() {
       send_motor_command(motor_vals[0], motor_vals[1], motor_vals[2], motor_vals[3], motor_vals[4]);
       k = 0;
     }
-  */
+    */
   }
 
   switch (robot_status) {
@@ -172,14 +172,14 @@ void loop() {
       break;
     case STEP2:
       if (!last_message_sent) {
-        send_motor_command(SLAVE_ID, 0, COUNTS_PER_STEP, 0, 0);
+        send_motor_command(SLAVE_ID, 0, 0, 0, COUNTS_PER_STEP);
         last_message_sent = 1;
       }
       //if all encoder readings are within the required tolerances
       if (abs(encoder_readings[SLAVE_ID][0]) <= MAX_ERROR &&
-          abs(encoder_readings[SLAVE_ID][1] - COUNTS_PER_STEP) <= MAX_ERROR &&
+          abs(encoder_readings[SLAVE_ID][1]) <= MAX_ERROR &&
           abs(encoder_readings[SLAVE_ID][2]) <= MAX_ERROR &&
-          abs(encoder_readings[SLAVE_ID][3]) <= MAX_ERROR) {
+          abs(encoder_readings[SLAVE_ID][3] - COUNTS_PER_STEP) <= MAX_ERROR) {
         robot_status = NEUTRAL3;
         last_message_sent = 0;
       }
@@ -228,14 +228,14 @@ void loop() {
       break;
     case STEP4:
       if (!last_message_sent) {
-        send_motor_command(SLAVE_ID, 0, 0, 0, COUNTS_PER_STEP);
+        send_motor_command(SLAVE_ID, 0, COUNTS_PER_STEP, 0, 0);
         last_message_sent = 1;
       }
       //if all encoder readings are within the required tolerances
       if (abs(encoder_readings[SLAVE_ID][0]) <= MAX_ERROR &&
-          abs(encoder_readings[SLAVE_ID][1]) <= MAX_ERROR &&
+          abs(encoder_readings[SLAVE_ID][1] - COUNTS_PER_STEP) <= MAX_ERROR &&
           abs(encoder_readings[SLAVE_ID][2]) <= MAX_ERROR &&
-          abs(encoder_readings[SLAVE_ID][3]) <= MAX_ERROR - COUNTS_PER_STEP) {
+          abs(encoder_readings[SLAVE_ID][3]) <= MAX_ERROR) {
         robot_status = NEUTRAL1; //move onto the next step
         last_message_sent = 0;
       }
